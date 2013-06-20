@@ -14,11 +14,6 @@ space_atom = ignored* first:atom ignored*
         return first;
     }
 
-exp = ignored "(" first:space_atom+ ")" ignored*
-    {
-        return first;
-    }
-
 expression =
     ignored* "(" first:expression+ ")" ignored*
     {
@@ -27,10 +22,6 @@ expression =
   /  "'" first:expression
     {
         return ["quote", first];
-    }
-  / first:exp
-    {
-        return first;
     }  
   / first:space_atom
     {
