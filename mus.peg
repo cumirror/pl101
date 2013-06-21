@@ -1,0 +1,82 @@
+/*
+ This is a grammar for mus for the homework(http://nathansuniversity.com/pegs9.html).
+ i use the pair to discribe the mus.
+ So you can't use (note note note ...) as a input, but the form as (note (note (note note))) is ok!
+*/
+
+start = 
+    seq
+
+ignored = [\x20\x09\x0a\x0d]
+
+notename = 
+    letter:[a-gA-G] octave:[1-7]
+    {
+        return letter+octave+"";
+    }
+  / letter:[abAB] octave:[0]
+    {
+        return letter+octave+"";
+    }
+  / letter:[cC] octave:[8]
+    {
+	return letter+octave+"";
+    }
+
+num =  
+    first:[1-9] left:[0-9]*
+    {
+	return parseInt(first+left.join(""));
+    }
+
+durtime = 
+    [\x5b] num:num [\x5d]
+    {
+	return num;
+    }
+
+note = 
+     notename:notename dur:durtime
+     {
+	return {tag:"note", pitch:notename, dur:dur};
+     }
+
+rest =
+     "(" rest:"rest" ignored* dur:num ")"
+     {
+	return {tag:rest, duration:dur};
+     }
+repeat =
+    "(" repeat:"repeat" ignored* seq:seq ignored* count:num ")"
+    {
+	return {tag:repeat, section:seq, count:count};
+    }
+
+par = 
+    "(" par:"par" ignored* left:seq right:seq ")"
+    {
+	return {tag:par, left:left, right:right};
+    }
+
+seq = 
+    ignored* repeat:repeat ignored*
+    {
+	return repeat;
+    }
+  / ignored* par:par ignored*
+    {
+        return par;
+    }
+  / ignored* rest:rest ignored*
+    {
+        return rest;
+    }
+ 
+  / ignored* "(" seq_l:seq seq_r:seq ")" ignored*
+    {
+	return {tag:"seq", left:seq_l, right:seq_r};
+    }
+  / ignored* note:note ignored*
+  {
+	return note;
+  }
