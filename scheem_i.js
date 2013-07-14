@@ -1,7 +1,14 @@
+/*
+var op = function (op) {
+    return; 
+};
+*/
+
 // A half-baked implementation of evalScheem
 var evalScheem = function (expr, env) {
     var ret = [];
     var i = 0;
+	var retValue = 0;
  
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
@@ -14,7 +21,11 @@ var evalScheem = function (expr, env) {
     // Look at head of list for operation
     switch (expr[0]) {
     case '+':
-        return evalScheem(expr[1], env) + evalScheem(expr[2], env);
+		for(i = 1; i < expr.length; i++)
+		{
+			retValue += evalScheem(expr[i], env); 
+		}
+        return retValue;
     case '-':
         return evalScheem(expr[1], env) - evalScheem(expr[2], env);
     case '*':
@@ -45,7 +56,7 @@ var evalScheem = function (expr, env) {
         if(evalScheem(expr[1], env) === '#t')
             return evalScheem(expr[2], env);            
         else 
-	    return evalScheem(expr[3], env);
+			return evalScheem(expr[3], env);
     case 'set!':
     case 'define':
         env[evalScheem(expr[1], env)] = evalScheem(expr[2], env);
@@ -78,4 +89,8 @@ var evalScheem = function (expr, env) {
     }
 };
 
-//exports.evalScheem = evalScheem;
+
+// If we are used as Node module, export evalScheem
+if (typeof module !== 'undefined') {
+    module.exports.evalScheem = evalScheem;
+}

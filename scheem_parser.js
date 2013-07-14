@@ -131,51 +131,33 @@ SCHEEM = (function(){
       }
       
       function parse_string() {
-        var result0, result1, result2;
-        var pos0;
+        var result0, result1;
         
-        pos0 = pos;
         if (/^[a-zA-Z_?!+\-=@#$%^&*\/]/.test(input.charAt(pos))) {
-          result0 = input.charAt(pos);
+          result1 = input.charAt(pos);
           pos++;
         } else {
-          result0 = null;
+          result1 = null;
           if (reportFailures === 0) {
             matchFailed("[a-zA-Z_?!+\\-=@#$%^&*\\/]");
           }
         }
-        if (result0 !== null) {
-          result1 = [];
-          if (/^[0-9a-zA-Z_?!+\-=@#$%^&*\/.]/.test(input.charAt(pos))) {
-            result2 = input.charAt(pos);
-            pos++;
-          } else {
-            result2 = null;
-            if (reportFailures === 0) {
-              matchFailed("[0-9a-zA-Z_?!+\\-=@#$%^&*\\/.]");
-            }
-          }
-          while (result2 !== null) {
-            result1.push(result2);
-            if (/^[0-9a-zA-Z_?!+\-=@#$%^&*\/.]/.test(input.charAt(pos))) {
-              result2 = input.charAt(pos);
+        if (result1 !== null) {
+          result0 = [];
+          while (result1 !== null) {
+            result0.push(result1);
+            if (/^[a-zA-Z_?!+\-=@#$%^&*\/]/.test(input.charAt(pos))) {
+              result1 = input.charAt(pos);
               pos++;
             } else {
-              result2 = null;
+              result1 = null;
               if (reportFailures === 0) {
-                matchFailed("[0-9a-zA-Z_?!+\\-=@#$%^&*\\/.]");
+                matchFailed("[a-zA-Z_?!+\\-=@#$%^&*\\/]");
               }
             }
           }
-          if (result1 !== null) {
-            result0 = [result0, result1];
-          } else {
-            result0 = null;
-            pos = pos0;
-          }
         } else {
           result0 = null;
-          pos = pos0;
         }
         return result0;
       }
@@ -203,10 +185,6 @@ SCHEEM = (function(){
         result0 = parse_num();
         if (result0 !== null) {
           result0 = (function(offset, num) {
-        		/* TODO: if 0, it's not a array, then you can't use join! 
-        		 *	     currently code is ugly! CHANGE IT!
-        		 * */
-        	//	if(num == 0) return 0;
         		return parseInt(num.join(""));
         	})(pos0, result0);
         }
