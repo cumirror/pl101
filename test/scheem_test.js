@@ -56,11 +56,12 @@ suite('if', function() {
     });
     test('string equal', function() {
         assert.deepEqual(
-            evalScheem(parse("(if (= 'abc efg) 'abc 'notabc)"), {efg:'abc'}),
+            evalScheem(parse("(if (= 'abc efg) 'abc 'notabc)"), {bindings:{efg:'abc'},out:{}}),
 	        'abc'
         );
     });
 });
+
 suite('add', function() {
     test('two numbers', function() {
         assert.deepEqual(
@@ -75,12 +76,52 @@ suite('add', function() {
         );
     });
     test('a dog and a cat', function() {
-	/* still kown assert.throws little! */
 	//assert.throws(function (){
 	assert.deepEqual(
-            evalScheem(['+', 'dog', 'cat'], {dog:4, cat:6}),
+            evalScheem(['+', 'dog', 'cat'], {bindings:{dog:4, cat:6},out:{}}),
 		    10
 	);
 	//});
+    });
+});
+
+suite('lambda-one', function() {
+    test('add one', function() {
+        assert.deepEqual(
+            evalScheem([['lambda-one', ['x'], ['+', 'x', 1]], 8], {}),
+            9
+        );
+    });
+});
+
+suite('anonymous function', function() {
+    test('lambda test', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x', 'y', 'z'], ['+', 'x', 'y', 'z']], 8, 9, 10], {}),
+            27
+        );
+    });
+});
+
+suite('function', function() {
+    test('call define lambda', function() {
+		var env = {bindings:{}, out:{}};
+        evalScheem(['define', 'a', ['lambda', ['x', 'y', 'z'], ['+', 'x', 'y', 'z']]], env);
+        assert.deepEqual(
+            evalScheem(['a', 8, 9, 10], env),
+            27
+        );
+    });
+});
+
+suite('function', function() {
+    test('pass function as value', function() {
+		var env = {bindings:{}, out:{}};
+        evalScheem(['define', 'a', ['lambda', ['x', 'y', 'z'], ['+', 'x', 'y', 'z']]], env);
+        evalScheem(['define', 'b', ['lambda', ['x', 'u', 'v', 'w'], ['x', 'u', 'v', 'w']]], env);
+        assert.deepEqual(
+            evalScheem(['b', 'a', 8, 9, 10], env),
+            27
+        );
     });
 });
